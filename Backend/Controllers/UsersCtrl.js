@@ -61,7 +61,21 @@ const usersController = {
       id: user._id,
     });
   }),
-  // Profile (optional, for future implementation)
+  // Profile
+  profile: asyncHandler(async (req, res) => {
+    // find the user
+    console.log(req.user);
+    const user = await User.findById(req.user);
+    if (!user) {
+      res.status(401);
+      throw new Error("User not found");
+    }
+    // Send the response
+    res.json({
+      username: user.username,
+      email: user.email,
+    });
+  }),
 };
 
 module.exports = usersController;

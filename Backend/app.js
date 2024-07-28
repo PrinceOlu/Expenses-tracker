@@ -1,6 +1,7 @@
 const express = require("express");
 const userRouter = require("./Routes/UserRouter");
 const mongoose = require("mongoose");
+const errorHandler = require("./Middlewares/errorHandlermiddleware");
 const app = express();
 const PORT = process.env.PORT || 8000;
 
@@ -20,7 +21,8 @@ mongoose
   });
 // Routes middleware
 app.use("/", userRouter);
-
+// Error handle
+app.use(errorHandler);
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on Port ${PORT}`);
