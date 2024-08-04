@@ -1,0 +1,36 @@
+1) install vite for UI
+npm create vite@latest
+
+2) install Redux rool kit for global state management
+npm install @reduxjs/toolkit react-redux
+
+3) install tanSack Query rool kit for managing asynchronous request i.e server state e.g loading, caching, error handling etc
+npm i @tanstack/react-query
+        AND
+npm i @tanstack/react-query-devtools
+
+4) install tailwind css
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+npm run dev
+
+5) to install formik to handle forms
+npm install formik --save
+
+6) to install yup for form validation
+npm install yup
+
+7) to install axios as HTTP CLIENT to make http requests
+npm install axios
+
+8) to install react icon  
+npm install react-icons --save
+
+9) to install react router dom for navigation
+npm i react-router-dom
+
+10) to install heroicons
+npm install @heroicons/react
+
+11) to install headless UI
+npm install @headlessui/react
