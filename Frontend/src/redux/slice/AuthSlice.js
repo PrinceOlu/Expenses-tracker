@@ -4,9 +4,9 @@ import { createSlice } from "@reduxjs/toolkit";
 const authSlice = createSlice({
   name: "auth", // it has to be unique
   initialState: {
-    user: null,
+    user: JSON.parse(localStorage.getItem("userInfo")) || null,
   },
-  //   1 Reducer
+  //   1 Reducers
   reducers: {
     loginAction: (state, action) => {
       state.user = action.payload;

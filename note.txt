@@ -34,3 +34,5 @@ npm install @heroicons/react
 
 11) to install headless UI
 npm install @headlessui/react
+12) install cors to make backend trust the frontend
+npm install cors

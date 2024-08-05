@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const userRouter = require("./Routes/UserRouter");
 const mongoose = require("mongoose");
 const errorHandler = require("./Middlewares/errorHandlermiddleware");
@@ -6,6 +7,17 @@ const categoryRouter = require("./Routes/CategoryRouter");
 const TransactionRouter = require("./Routes/TransactionRouter");
 
 const app = express();
+
+// Use CORS middleware
+// app.use(cors());
+
+// Optionally, you can configure CORS with options
+const corsOptions = {
+  origin: "http://localhost:5173",
+  optionsSuccessStatus: 200,
+};
+app.use(cors(corsOptions));
+
 const PORT = process.env.PORT || 8000;
 
 // Middleware to parse JSON bodies
