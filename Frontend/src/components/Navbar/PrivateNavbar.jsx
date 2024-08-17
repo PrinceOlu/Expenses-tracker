@@ -3,14 +3,23 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
 import { IoLogOutOutline } from "react-icons/io5";
-
+import { useDispatch } from "react-redux";
 import { SiAuthy } from "react-icons/si";
+import { logoutAction } from "../../redux/slice/AuthSlice";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function PrivateNavbar() {
+  // Dispatch
+  const dispatch = useDispatch();
+  // TODO: Add logout functionality
+  const logoutHandler = () => {
+    dispatch(logoutAction());
+    // remove user from storge
+    localStorage.removeItem("userInfo");
+  };
   return (
     <Disclosure as="nav" className="bg-white ">
       {({ open }) => (
@@ -39,7 +48,7 @@ export default function PrivateNavbar() {
                     to="/"
                     className="inline-flex items-center border-b-2 border-indigo-500 px-1 pt-1 text-sm font-medium text-gray-900"
                   >
-                    MasyncTracker
+                    Expense-Tracker
                   </Link>
                 </div>
                 <div className="hidden md:ml-6 md:flex md:space-x-8">
@@ -78,7 +87,7 @@ export default function PrivateNavbar() {
               <div className="flex items-center">
                 <div className="flex-shrink-0">
                   <button
-                    // onClick={logoutHandler}
+                    onClick={logoutHandler}
                     type="button"
                     className="relative m-2 inline-flex items-center gap-x-1.5 rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600"
                   >
@@ -121,7 +130,7 @@ export default function PrivateNavbar() {
                         <Menu.Item>
                           {({ active }) => (
                             <button
-                              // onClick={logoutHandler}
+                              onClick={logoutHandler}
                               className={classNames(
                                 active ? "bg-gray-100" : "",
                                 "block px-4 py-2 text-sm text-gray-700"
