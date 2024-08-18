@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useMutation } from "@tanstack/react-query";
@@ -7,8 +7,9 @@ import { loginAPI } from "../../services/users/userServices";
 import AlertMessage from "../Alert/AlertMessage";
 import { loginAction } from "../../redux/slice/AuthSlice";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
-// validate forms
+// Validate forms
 const validationSchema = Yup.object({
   email: Yup.string().email("Invalid email").required("Email is required"),
   password: Yup.string()
@@ -17,7 +18,9 @@ const validationSchema = Yup.object({
 });
 
 const LoginForm = () => {
-  // dispatch
+  // Navigate
+  const navigate = useNavigate();
+  // Dispatch
   const dispatch = useDispatch();
   // Mutation
   const { mutateAsync, isLoading, isError, error, isSuccess } = useMutation({
@@ -30,15 +33,15 @@ const LoginForm = () => {
       email: "",
       password: "",
     },
-    // validations
+    // Validations
     validationSchema: validationSchema,
-    // submit
+    // Submit
     onSubmit: (values) => {
       mutateAsync(values)
         .then((data) => {
-          // dispatch the action
+          // Dispatch the action
           dispatch(loginAction(data));
-          // save the user into local storage
+          // Save the user into local storage
           localStorage.setItem("userInfo", JSON.stringify(data));
         })
         .catch((err) => {
@@ -46,6 +49,15 @@ const LoginForm = () => {
         });
     },
   });
+
+  // Redirect
+  useEffect(() => {
+    if (isSuccess) {
+      setTimeout(() => {
+        navigate("/profile");
+      }, 3000);
+    }
+  }, [isSuccess, navigate]);
 
   return (
     <form
@@ -58,7 +70,10 @@ const LoginForm = () => {
       {/* Display messages */}
       {isLoading && <AlertMessage type="loading" message="Logging in..." />}
       {isError && (
-        <AlertMessage type="error" message={error.response.data.message} />
+        <AlertMessage
+          type="error"
+          message={error?.response?.data?.message || "An error occurred"}
+        />
       )}
       {isSuccess && (
         <AlertMessage type="success" message="Login successful..." />
