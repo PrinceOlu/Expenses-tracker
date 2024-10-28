@@ -14,7 +14,7 @@ const validationSchema = Yup.object({
     .email("Invalid email address")
     .required("Email is required"),
   password: Yup.string()
-    .min(8, "Password must be at least 8 characters long")
+    .min(6, "Password must be at least 6 characters long")
     .required("Password is required"),
   confirmPassword: Yup.string()
     .oneOf([Yup.ref("password"), null], "Passwords must match")
@@ -54,7 +54,7 @@ const RegistrationForm = () => {
   useEffect(() => {
     if (isSuccess) {
       setTimeout(() => {
-        navigate("/");
+        navigate("/login");
       }, 3000);
     }
   }, [isSuccess, navigate]);
@@ -69,15 +69,8 @@ const RegistrationForm = () => {
       </h2>
       {/* Display messages */}
       {isLoading && <AlertMessage type="loading" message="Registering..." />}
-      {isError && (
-        <AlertMessage
-          type="error"
-          message={error.response?.data?.message || "An error occurred"}
-        />
-      )}
-      {isSuccess && (
-        <AlertMessage type="success" message="Registration successful..." />
-      )}
+      {isError && (<AlertMessage type="error" message={error.response?.data?.message || "An error occurred"}/>)}
+      {isSuccess && (<AlertMessage type="success" message="Registration successful..." />)}
 
       <p className="text-sm text-center text-gray-500">
         Join our community now!

@@ -6,10 +6,11 @@ const transactionController = {
   //!add
   create: asyncHandler(async (req, res) => {
     const { type, category, amount, date, description } = req.body;
+    // valiate user input
     if (!amount || !type || !date) {
       throw new Error("Type, amount and date are required");
     }
-    //! Create
+    //! Create the transaction
     const transaction = await Transaction.create({
       user: req.user,
       type,
@@ -17,14 +18,20 @@ const transactionController = {
       amount,
       description,
     });
-    res.status(201).json(transaction);
+    res.status(201).json({
+      message:"Transaction Created...",
+      transaction:transaction
+    });
   }),
 
   //!lists
   getFilteredTransactions: asyncHandler(async (req, res) => {
     const { startDate, endDate, type, category } = req.query;
+    // console.log(req.query);
+    
+    // filter the query
     let filters = { user: req.user };
-
+    
     if (startDate) {
       filters.date = { ...filters.date, $gte: new Date(startDate) };
     }

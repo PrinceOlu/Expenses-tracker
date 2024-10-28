@@ -18,14 +18,20 @@ const validationSchema = Yup.object({
 });
 
 const LoginForm = () => {
-  // Navigate
   const navigate = useNavigate();
-  // Dispatch
   const dispatch = useDispatch();
-  // Mutation
-  const { mutateAsync, isLoading, isError, error, isSuccess } = useMutation({
+
+  const { mutateAsync, isLoading, isError, error, isSuccess, reset } = useMutation({
     mutationFn: loginAPI,
     mutationKey: ["login"],
+    onSuccess: (data) => {
+      // Dispatch the action to update Redux state
+      dispatch(loginAction(data));
+      // Save user info to local storage
+      localStorage.setItem("UserInfo", JSON.stringify(data));
+      // Navigate to profile upon success
+      navigate("/profile");
+    },
   });
 
   const formik = useFormik({
@@ -33,41 +39,20 @@ const LoginForm = () => {
       email: "",
       password: "",
     },
-    // Validations
     validationSchema: validationSchema,
-    // Submit
     onSubmit: (values) => {
-      mutateAsync(values)
-        .then((data) => {
-          // Dispatch the action
-          dispatch(loginAction(data));
-          // Save the user into local storage
-          localStorage.setItem("userInfo", JSON.stringify(data));
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      reset();  // Reset mutation state for new login attempt
+      mutateAsync(values).catch((err) => console.log(err));
     },
   });
-
-  // Redirect
-  useEffect(() => {
-    if (isSuccess) {
-      setTimeout(() => {
-        navigate("/profile");
-      }, 3000);
-    }
-  }, [isSuccess, navigate]);
 
   return (
     <form
       onSubmit={formik.handleSubmit}
       className="max-w-md mx-auto my-10 bg-white p-6 rounded-xl shadow-lg space-y-6 border border-gray-200"
     >
-      <h2 className="text-3xl font-semibold text-center text-gray-800">
-        Login
-      </h2>
-      {/* Display messages */}
+      <h2 className="text-3xl font-semibold text-center text-gray-800">Login</h2>
+
       {isLoading && <AlertMessage type="loading" message="Logging in..." />}
       {isError && (
         <AlertMessage
@@ -75,12 +60,9 @@ const LoginForm = () => {
           message={error?.response?.data?.message || "An error occurred"}
         />
       )}
-      {isSuccess && (
-        <AlertMessage type="success" message="Login successful..." />
-      )}
-      <p className="text-sm text-center text-gray-500">
-        Login to access your account
-      </p>
+      {isSuccess && <AlertMessage type="success" message="Login successful..." />}
+
+      <p className="text-sm text-center text-gray-500">Login to access your account</p>
 
       {/* Input Field - Email */}
       <div className="relative">

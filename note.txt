@@ -1,3 +1,18 @@
+@backend 
+-npm init --yes
+install dependencies:
+    bcryptjs (for hash user password)
+    cors (cross origin communication)
+    express (to create logics)
+    express-async-handler (to catch any asyc errors instead of using try $ catch)
+    jsonwebtoken (token generation and verification)
+    mongodb(to pass define data structure)
+    mongoose (to connect to mongodb)
+  
+  devDependencies:
+    nodemon (to automatically run app during development)
+  
+Front end installations
 1) install vite for UI
 npm create vite@latest
 
@@ -36,3 +51,7 @@ npm install @heroicons/react
 npm install @headlessui/react
 12) install cors to make backend trust the frontend
 npm install cors
+
+
+Run app using 
+npm run dev

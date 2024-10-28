@@ -6,12 +6,15 @@ import { IoLogOutOutline } from "react-icons/io5";
 import { useDispatch } from "react-redux";
 import { SiAuthy } from "react-icons/si";
 import { logoutAction } from "../../redux/slice/AuthSlice";
+import { useNavigate } from "react-router-dom";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function PrivateNavbar() {
+   // Initialize navigate
+   const navigate = useNavigate();
   // Dispatch
   const dispatch = useDispatch();
   // TODO: Add logout functionality
@@ -19,6 +22,8 @@ export default function PrivateNavbar() {
     dispatch(logoutAction());
     // remove user from storge
     localStorage.removeItem("userInfo");
+    // Navigate to login page after logout
+    navigate("/login");
   };
   return (
     <Disclosure as="nav" className="bg-white ">

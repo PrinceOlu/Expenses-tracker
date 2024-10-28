@@ -12,7 +12,7 @@ const categoryController = {
     //Convert the name to lowercase
     const normalizedName = name.toLowerCase();
     //! Check if the type is valid
-    const validTypes = ["income", "expense"];
+    const validTypes = ["income", "expenses"];
     if (!validTypes.includes(type.toLowerCase())) {
       throw new Error("Invalid category type" + type);
     }
