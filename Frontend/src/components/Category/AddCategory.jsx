@@ -23,10 +23,8 @@ const AddCategory = () => {
     mutationFn: addCategoryAPI,
     mutationKey: ["addCategory"],
     onSuccess: () => {
-      setTimeout(() => {
-        navigate("/add-category");
-      }, 3000);
-    },
+      navigate("/add-category");
+     },
   });
 
   const formik = useFormik({

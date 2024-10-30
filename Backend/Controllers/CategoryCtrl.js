@@ -1,6 +1,8 @@
 const asyncHandler = require("express-async-handler");
 const Category = require("../model/Category");
 const Transaction = require("../model/Transaction");
+const mongoose = require('mongoose');
+
 
 const categoryController = {
   //!add
@@ -12,7 +14,7 @@ const categoryController = {
     //Convert the name to lowercase
     const normalizedName = name.toLowerCase();
     //! Check if the type is valid
-    const validTypes = ["income", "expenses"];
+    const validTypes = ["income", "expense"];
     if (!validTypes.includes(type.toLowerCase())) {
       throw new Error("Invalid category type" + type);
     }
@@ -44,18 +46,36 @@ const categoryController = {
   //!update
   update: asyncHandler(async (req, res) => {
     const { categoryId } = req.params;
-    const { type, name } = req.body;
-    const normalizedName = name.toLowerCase();
-    const category = await Category.findById(categoryId);
-    if (!category && category.user.toString() !== req.user.toString()) {
-      throw new Error("Category not found or user not authorized");
+    console.log("Category ID:", categoryId);
+
+    // Check if categoryId is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(categoryId) || String(new mongoose.Types.ObjectId(categoryId)) !== categoryId) {
+      return res.status(400).json({ message: "Invalid category ID format" });
     }
+    
+  
+    const { type, name } = req.body;
+    const normalizedName = name ? name.toLowerCase() : undefined;
+  
+    const category = await Category.findById(categoryId);
+    
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+  
+    // Authorization check
+    if (category.user.toString() !== req.user.toString()) {
+      return res.status(403).json({ message: "User not authorized to update this category" });
+    }
+  
     const oldName = category.name;
-    //! Update category properties
+  
+    // Update category properties
     category.name = normalizedName || category.name;
     category.type = type || category.type;
     const updatedCategory = await category.save();
-    //Update affected transaction
+  
+    // Update affected transactions if the category name has changed
     if (oldName !== updatedCategory.name) {
       await Transaction.updateMany(
         {
@@ -65,8 +85,11 @@ const categoryController = {
         { $set: { category: updatedCategory.name } }
       );
     }
+  
     res.json(updatedCategory);
   }),
+  
+  
   //! delete
   delete: asyncHandler(async (req, res) => {
     const category = await Category.findById(req.params.id);

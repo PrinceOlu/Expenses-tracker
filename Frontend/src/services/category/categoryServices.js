@@ -42,6 +42,64 @@ export const addCategoryAPI = async (categoryData) => {
     throw error;
   }
 };
+// Update Category
+export const updateCategoryAPI = async (categoryData) => {
+  const token = getToken();
+
+  if (!token) {
+    throw new Error("No token found. Please log in again.");
+  }
+
+  try {
+    const response = await axios.put(`${BASE_URL}/categories/update/${categoryData.id}`,
+      {
+        name: categoryData.name,
+        type: categoryData.type,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Add Category API error:",
+      error.response ? error.response.data : error.message
+    );
+    throw error;
+  }
+};
+// delete Category
+export const deleteCategoryAPI = async (categoryData) => {
+  const token = getToken();
+
+  if (!token) {
+    throw new Error("No token found. Please log in again.");
+  }
+
+  try {
+    const response = await axios.delete(`${BASE_URL}/categories/delete/${categoryData.id}`,
+           {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Add Category API error:",
+      error.response ? error.response.data : error.message
+    );
+    throw error;
+  }
+};
 
 // List Categories
 export const listCategoriesAPI = async () => {

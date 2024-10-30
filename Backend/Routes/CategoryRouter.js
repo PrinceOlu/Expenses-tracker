@@ -8,8 +8,8 @@ CategoryRouter.post("/api/v1/categories/create",isAuthenticated,categoryControll
 // Define the route for listing Categories
 CategoryRouter.get("/api/v1/categories/lists",isAuthenticated,categoryController.lists);
 // Define the route for updating Categories
-CategoryRouter.put("/api/v1/categories/update/:id",isAuthenticated,categoryController.update);
+CategoryRouter.put("/api/v1/categories/update/:categoryId",isAuthenticated,categoryController.update);
 // Define the route for deleting Categories
-CategoryRouter.delete("/api/v1/categories/delete/:id",isAuthenticated,categoryController.delete);
+CategoryRouter.delete("/api/v1/categories/delete/:categoryId",isAuthenticated,categoryController.delete);
 
 module.exports = CategoryRouter; // Export CategoryRouter
