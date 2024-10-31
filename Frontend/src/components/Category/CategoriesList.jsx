@@ -4,8 +4,12 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { listCategoriesAPI,deleteCategoryAPI } from "../../services/category/categoryServices";
 import AlertMessage from "../Alert/AlertMessage";
+import { useQueryClient } from "@tanstack/react-query"; // Add this import
 import { useNavigate } from "react-router-dom";
+
+
 const CategoriesList = () => {
+  const queryClient = useQueryClient(); // Initialize queryClient
   // funtion to fetch categories
   const {data, isError, isLoading, isFetched, error}=useQuery({
     queryFn:listCategoriesAPI,
@@ -17,17 +21,22 @@ const CategoriesList = () => {
    const navigate = useNavigate();
 
    // Mutation
-   const { mutateAsync, isLoading:isCategoryLoading, error:isCategoryError, isSuccess } = useMutation({
+   const { mutateAsync, isLoading:isCategoryLoading, error:CategoryError, isSuccess } = useMutation({
      mutationFn: deleteCategoryAPI,
      mutationKey: ["delete-category"],
      onSuccess: () => {
-       navigate("/categories");
+       queryClient.invalidateQueries("list-categories"); // Refetch categories list
+       
       },
    });
   // delete handler
-  const handleDelete = (categoryId)=>{
-    mutateAsync(categoryId).then((data)=>{}).catch(e=>console.log(e))
-  }
+  const handleDelete = (categoryId) => {
+    mutateAsync({ id: categoryId })
+      .then(() => {
+        console.log("Category deleted successfully");
+      })
+      .catch((e) => console.log(e));
+  };
   return (
     <div className="max-w-md mx-auto my-10 bg-white p-6 rounded-lg shadow-lg">
       <h2 className="text-2xl font-semibold text-gray-800 mb-4">Categories</h2>

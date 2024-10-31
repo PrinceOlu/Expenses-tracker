@@ -10,6 +10,6 @@ CategoryRouter.get("/api/v1/categories/lists",isAuthenticated,categoryController
 // Define the route for updating Categories
 CategoryRouter.put("/api/v1/categories/update/:categoryId",isAuthenticated,categoryController.update);
 // Define the route for deleting Categories
-CategoryRouter.delete("/api/v1/categories/delete/:categoryId",isAuthenticated,categoryController.delete);
+CategoryRouter.delete("/api/v1/categories/delete/:id",isAuthenticated,categoryController.delete);
 
 module.exports = CategoryRouter; // Export CategoryRouter

@@ -23,7 +23,7 @@ const AddCategory = () => {
     mutationFn: addCategoryAPI,
     mutationKey: ["addCategory"],
     onSuccess: () => {
-      navigate("/add-category");
+      navigate("/categories");
      },
   });
 

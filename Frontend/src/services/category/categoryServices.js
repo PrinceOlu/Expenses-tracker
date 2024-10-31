@@ -6,7 +6,6 @@ import { getUserFromStorage } from "../../utils/getUserFromStorage";
 // Function to get the token from storage
 const getToken = () => {
   const token = getUserFromStorage();
-  console.log("Retrieved token:", token);  // Debugging line
   return token;
 };
 
@@ -74,7 +73,7 @@ export const updateCategoryAPI = async (categoryData) => {
   }
 };
 // delete Category
-export const deleteCategoryAPI = async (categoryData) => {
+export const deleteCategoryAPI = async ({ id }) => {
   const token = getToken();
 
   if (!token) {
@@ -82,24 +81,23 @@ export const deleteCategoryAPI = async (categoryData) => {
   }
 
   try {
-    const response = await axios.delete(`${BASE_URL}/categories/delete/${categoryData.id}`,
-           {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await axios.delete(`${BASE_URL}/categories/delete/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
 
     return response.data;
   } catch (error) {
     console.error(
-      "Add Category API error:",
+      "Delete Category API error:",
       error.response ? error.response.data : error.message
     );
     throw error;
   }
 };
+
 
 // List Categories
 export const listCategoriesAPI = async () => {
