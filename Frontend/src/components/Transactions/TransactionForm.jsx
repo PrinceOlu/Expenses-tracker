@@ -2,6 +2,8 @@ import React, { useEffect } from "react";
 import { useFormik } from "formik";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import * as Yup from "yup";
+import { useNavigate } from "react-router-dom";
+import AlertMessage from "../Alert/AlertMessage";
 import {
   FaDollarSign,
   FaCalendarAlt,
@@ -9,6 +11,7 @@ import {
   FaWallet,
 } from "react-icons/fa";
 import { listCategoriesAPI } from "../../services/category/categoryServices";
+import { addTransactionAPI } from "../../services/transactions/transactionServices";
 
 const validationSchema = Yup.object({
   type: Yup.string()
@@ -23,12 +26,22 @@ const validationSchema = Yup.object({
 });
 
 const TransactionForm = () => {
+   // Navigate
+ const navigate = useNavigate();
+
+ // Mutation
+ const { mutateAsync, isLoading:isTransactionloading, isError:isTransactionError, error:transactionError, isSuccess } = useMutation({
+   mutationFn: addTransactionAPI,
+   mutationKey: ["add-transaction"],
+   onSuccess: () => {
+     navigate("/dashboard");
+    },
+ });
  // funtion to fetch categories
  const {data, isError, isLoading, isFetched, error}=useQuery({
   queryFn:listCategoriesAPI,
   queryKey:['list-categories']
 });
-console.log(data);
 
   const formik = useFormik({
     initialValues: {
@@ -40,13 +53,13 @@ console.log(data);
     },
     validationSchema,
     onSubmit: (values) => {
-      // mutateAsync(values)
-      //   .then((data) => {
-      //     console.log("Category added:", data);
-      //   })
-      //   .catch((err) => {
-      //     console.error("Error adding category:", err);
-      //   });
+            mutateAsync(values)
+        .then((data) => {
+          console.log("Category added:", data);
+        })
+        .catch((err) => {
+          console.error("Error adding category:", err);
+        });
     },
   });
   return (
@@ -58,7 +71,20 @@ console.log(data);
     <h2 className="text-2xl font-semibold text-gray-800">Transaction Details</h2>
     <p className="text-gray-600">Fill in the details below.</p>
   </div>
-
+  {isError && (
+        <AlertMessage
+          type="error"
+          message={
+            error?.message || "Something went wrong, please try again later"
+          }
+        />
+      )}
+      {isSuccess && (
+        <AlertMessage
+          type="success"
+          message="Transaction added successfully, redirecting..."
+        />
+      )}
   {/* Transaction Type Field */}
   <div className="space-y-2">
     <label htmlFor="type" className="text-gray-700 font-medium flex items-center">
@@ -104,12 +130,20 @@ console.log(data);
       <span>Category</span>
     </label>
     <select
-      {...formik.getFieldProps("category")}
-      id="category"
-      className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-    >
-      <option value="">Select a category</option>
-    </select>
+          {...formik.getFieldProps("category")}
+          id="category"
+          className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+        >
+          <option value="">Select a category</option>
+          {isLoading && <option>Loading categories...</option>}
+          {isError && <option>Error loading categories</option>}
+          {data &&
+            data.map((category) => (
+              <option key={category.id} value={category.name}>
+                {category.name}
+              </option>
+            ))}
+        </select>
     {formik.touched.category && formik.errors.category && (
       <p className="text-red-500 text-xs italic">{formik.errors.category}</p>
     )}
