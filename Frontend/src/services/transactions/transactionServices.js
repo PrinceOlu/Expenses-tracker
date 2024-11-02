@@ -103,7 +103,7 @@ export const deleteCategoryAPI = async ({ id }) => {
 
 
 // List Transactions
-export const lisTransactionsAPI = async () => {
+export const listTransactionsAPI = async ({ category, type, startDate, endDate }) => {
   const token = getToken();
 
   if (!token) {
@@ -112,6 +112,7 @@ export const lisTransactionsAPI = async () => {
 
   try {
     const response = await axios.get(`${BASE_URL}/transactions/lists`, {
+      params: { category, type, startDate, endDate },
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -119,10 +120,7 @@ export const lisTransactionsAPI = async () => {
 
     return response.data;
   } catch (error) {
-    console.error(
-      "List Categories API error:",
-      error.response ? error.response.data : error.message
-    );
+    console.error("List Transactions API error:", error.response ? error.response.data : error.message);
     throw error;
   }
 };

@@ -1,14 +1,95 @@
-import React from "react";
+import React, { useEffect } from 'react';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { Doughnut } from 'react-chartjs-2';
+
+// Register the required elements
+ChartJS.register(ArcElement, Tooltip, Legend);
+import { useQuery } from "@tanstack/react-query";
+import { listTransactionsAPI } from "../../services/transactions/transactionServices";
+
+// Register necessary components with Chart.js
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const TransactionChart = () => {
-  return (
-    <div className="my-8 p-6 bg-white rounded-lg shadow-xl border border-gray-200">
-      <h1 className="text-2xl font-bold text-center mb-6">
-        Transaction Overview
-      </h1>
-      <div style={{ height: "350px" }}>{/* <Doughnut  /> */}</div>
-    </div>
-  );
+    // Fetch Transactions
+    const { data: transactions = [], isError, isLoading } = useQuery({
+        queryFn: listTransactionsAPI,
+        queryKey: ["list-transactions"],
+    });
+
+    // Handle loading and error states
+    if (isLoading) return <div>Loading...</div>;
+    if (isError) return <div>Error fetching transactions.</div>;
+
+    // Calculate total income and expenses
+    const totals = transactions.reduce((acc, transaction) => {
+        if (transaction?.type === 'income') {
+            acc.income += transaction?.amount || 0;
+        } else if (transaction?.type === 'expense') {
+            acc.expense += transaction?.amount || 0;
+        }
+        return acc;
+    }, {
+        income: 0,
+        expense: 0
+    });
+
+    // Data structure for the chart
+    const data = {
+        labels: ['Income', 'Expense'],
+        datasets: [{
+            label: 'Transactions',
+            data: [totals.income, totals.expense],
+            backgroundColor: [
+              'green',
+              'red',
+                
+            ],
+            hoverOffset: 4,
+            borderColor: "white",
+            borderWidth: 1,
+        }]
+    };
+
+    const options = {
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: "bottom",
+                labels: {
+                    padding: 25,
+                    boxWidth: 12,
+                    font: {
+                        size: 14
+                    },
+                },
+            },
+            title: {
+                display: true,
+                text: "Income vs Expense",
+                font: {
+                    size: 18,
+                    weight: "bold"
+                },
+                padding: {
+                    top: 10,
+                    bottom: 30
+                },
+            },
+        },
+        cutout: "70%"
+    };
+
+    return (
+        <div className="my-8 p-6 bg-white rounded-lg shadow-xl border border-gray-200">
+            <h1 className="text-2xl font-bold text-center mb-6">
+                Transaction Overview
+            </h1>
+            <div style={{ height: "350px" }}>
+                <Doughnut data={data} options={options} />
+            </div>
+        </div>
+    );
 };
 
 export default TransactionChart;

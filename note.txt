@@ -52,6 +52,10 @@ npm install @headlessui/react
 12) install cors to make backend trust the frontend
 npm install cors
 
+13 ) install chart dependencies and packages
+npm install chart.js
+npm i react-chartjs-2 chart.js
+
 
 Run app using 
 npm run dev

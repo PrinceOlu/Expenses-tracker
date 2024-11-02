@@ -1,18 +1,35 @@
 import React, { useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { FaTrash, FaEdit } from "react-icons/fa";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import { useQueryClient } from "@tanstack/react-query"; 
-import { lisTransactionsAPI } from "../../services/transactions/transactionServices";
+import { listTransactionsAPI } from "../../services/transactions/transactionServices"; // Corrected the import
 import { listCategoriesAPI } from "../../services/category/categoryServices";
 
 const TransactionList = () => {
   const queryClient = useQueryClient();
 
+  // Filtering state
+  const [filters, setFilters] = useState({
+    startDate: "",
+    endDate: "",
+    type: "",
+    category: "",
+  });
+
+  // Handle filter change
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters((prev) => ({
+      ...prev,
+      [name]: value === "All" ? "" : value, // Correcting category value for "All" option
+    }));
+  };
+
   // Fetch Transactions
   const { data: transactions, isError, isLoading, error } = useQuery({
-    queryFn: lisTransactionsAPI,
-    queryKey: ["list-transactions"],
+    queryFn: () => listTransactionsAPI(filters),
+    queryKey: ["list-transactions", filters],
   });
 
   // Fetch Categories
@@ -43,18 +60,24 @@ const TransactionList = () => {
         <input
           type="date"
           name="startDate"
+          value={filters.startDate}
+          onChange={handleFilterChange}
           className="p-2 rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
         />
         {/* End Date */}
         <input
           type="date"
           name="endDate"
+          value={filters.endDate}
+          onChange={handleFilterChange}
           className="p-2 rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
         />
         {/* Type */}
         <div className="relative">
           <select
             name="type"
+            value={filters.type}
+            onChange={handleFilterChange}
             className="w-full p-2 rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 appearance-none"
           >
             <option value="">All Types</option>
@@ -67,9 +90,12 @@ const TransactionList = () => {
         <div className="relative">
           <select
             name="category"
+            value={filters.category}
+            onChange={handleFilterChange}
             className="w-full p-2 rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 appearance-none"
           >
-            <option value="">All Categories</option>
+            <option value="All">All Categories</option>
+            <option value="Uncategorized">Uncategorized</option>
             {categories?.map((category) => (
               <option key={category._id} value={category.name}>
                 {category.name}
@@ -120,7 +146,7 @@ const TransactionList = () => {
                     <FaEdit />
                   </button>
                   <button
-                    onClick={() => handleDelete(transaction._id)}
+                    onClick={() => handleDelete(transaction.id)}
                     className="text-red-500 hover:text-red-700"
                   >
                     <FaTrash />
