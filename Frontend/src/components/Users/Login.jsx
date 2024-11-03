@@ -30,7 +30,7 @@ const LoginForm = () => {
       // Save user info to local storage
       localStorage.setItem("UserInfo", JSON.stringify(data));
       // Navigate to profile upon success
-      navigate("/profile");
+      navigate("/dashboard");
     },
   });
 

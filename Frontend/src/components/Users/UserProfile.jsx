@@ -88,6 +88,7 @@ const UserProfile = () => {
           </div>
         </form>
       </div>
+      {/* component to update profile */}
       <UpdatePassword />
     </>
   );

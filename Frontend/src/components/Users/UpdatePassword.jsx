@@ -1,24 +1,48 @@
-import React, { useState } from "react";
+import React from "react";
 import { AiOutlineLock } from "react-icons/ai";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { useMutation } from "@tanstack/react-query";
+import { changePasswordAPI } from "../../services/users/userServices";
+import { useNavigate } from "react-router-dom"; 
+import { useDispatch } from "react-redux"; 
+// import { loginAction } from "../../redux/slice/AuthSlice";
+
+
 const validationSchema = Yup.object({
-  password: Yup.string()
-    .min(5, "Password must be at least 5 characters long")
-    .required("Email is required"),
+  newPassword: Yup.string()
+    .min(6, "Password must be at least 6 characters long")
+    .required("Password is required"),
 });
+
 const UpdatePassword = () => {
+  const navigate = useNavigate(); 
+  const dispatch = useDispatch(); 
+
+  const { mutateAsync, isLoading, isError, error, isSuccess } = useMutation({
+    mutationFn: changePasswordAPI,
+    mutationKey: ["change-Password"],
+    // onSuccess: (data) => {
+    //   dispatch(loginAction(data)); 
+    //   localStorage.setItem("UserInfo", JSON.stringify(data));
+    //   navigate("/dashboard"); 
+    // },
+  });
+
   const formik = useFormik({
     initialValues: {
-      password: "123456",
+      newPassword: "",
     },
-    // Validations
     validationSchema,
-    //Submit
     onSubmit: (values) => {
-      console.log(values);
+      mutateAsync({ newPassword: values.newPassword })
+        .then((data) => {
+          navigate("/dashboard"); 
+        })
+        .catch((e) => console.log(e));
     },
   });
+
   return (
     <div className="flex flex-col items-center justify-center p-4">
       <h2 className="text-lg font-semibold mb-4">Change Your Password</h2>
@@ -35,15 +59,15 @@ const UpdatePassword = () => {
             <input
               id="new-password"
               type="password"
-              name="newPassword"
-              {...formik.getFieldProps("email")}
+              name="newPassword" // Updated to match the validation schema
+              {...formik.getFieldProps("newPassword")}
               className="outline-none flex-1"
               placeholder="Enter new password"
             />
           </div>
-          {formik.touched.password && formik.errors.password && (
+          {formik.touched.newPassword && formik.errors.newPassword && (
             <span className="text-xs text-red-500">
-              {formik.errors.password}
+              {formik.errors.newPassword}
             </span>
           )}
         </div>
@@ -52,8 +76,10 @@ const UpdatePassword = () => {
           type="submit"
           className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
-          Update Password
+          {isLoading ? "Updating..." : "Update Password"}
         </button>
+        {isError && <p className="text-red-500 mt-2">Error: {error.message}</p>}
+        {isSuccess && <p className="text-green-500 mt-2">Password updated successfully!</p>}
       </form>
     </div>
   );

@@ -1,3 +1,4 @@
+import { getUserFromStorage } from "../../utils/getUserFromStorage";
 import { BASE_URL } from "../../utils/urls";
 import axios from "axios";
 
@@ -12,18 +13,16 @@ export const loginAPI = async (userData) => {
     // If the login is successful and you receive a token
     const { token } = response.data;
     if (token) {
-      // Store the token in localStorage or sessionStorage
       localStorage.setItem("authToken", token);
     }
 
-    // Return the response data
     return response.data;
   } catch (error) {
-    // Handle error
     console.error("Login API error:", error);
-    throw error;
+    throw new Error("Login failed. Please check your credentials."); // More specific error message
   }
 };
+
 // Register
 export const registerAPI = async (userData) => {
   try {
@@ -33,18 +32,65 @@ export const registerAPI = async (userData) => {
       username: userData.username,
     });
 
-    // If the login is successful and you receive a token
     const { token } = response.data;
     if (token) {
-      // Store the token in localStorage or sessionStorage
       localStorage.setItem("authToken", token);
     }
 
-    // Return the response data
     return response.data;
   } catch (error) {
-    // Handle error
-    console.error("Login API error:", error);
-    throw error;
+    console.error("Register API error:", error);
+    throw new Error("Registration failed. Please try again."); // More specific error message
+  }
+};
+
+// Change Password
+export const changePasswordAPI = async (userData) => {
+  const token = getUserFromStorage(); // Retrieve the token from storage
+
+  try {
+    const response = await axios.put(`${BASE_URL}/users/update-password`, {
+      newPassword: userData.newPassword
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const { token: newToken } = response.data;
+    if (newToken) {
+      localStorage.setItem("authToken", newToken);
+    }
+
+    return response.data;
+  } catch (error) {
+    console.error("Password Change API error:", error);
+    throw new Error("Password change failed. Please try again."); // More specific error message
+  }
+};
+
+// Update Profile
+export const updateProfileAPI = async (userData) => {
+  const token = getUserFromStorage(); // Ensure token is retrieved
+
+  try {
+    const response = await axios.put(`${BASE_URL}/users/update-profile`, {
+      email: userData.email,
+      username: userData.username,
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const { token: newToken } = response.data;
+    if (newToken) {
+      localStorage.setItem("authToken", newToken);
+    }
+
+    return response.data;
+  } catch (error) {
+    console.error("Profile Update API error:", error);
+    throw new Error("Profile update failed. Please try again."); // More specific error message
   }
 };
