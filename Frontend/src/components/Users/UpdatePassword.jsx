@@ -6,6 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { changePasswordAPI } from "../../services/users/userServices";
 import { useNavigate } from "react-router-dom"; 
 import { useDispatch } from "react-redux"; 
+import AlertMessage from "../Alert/AlertMessage";
 // import { loginAction } from "../../redux/slice/AuthSlice";
 
 
@@ -37,7 +38,7 @@ const UpdatePassword = () => {
     onSubmit: (values) => {
       mutateAsync({ newPassword: values.newPassword })
         .then((data) => {
-          navigate("/dashboard"); 
+          
         })
         .catch((e) => console.log(e));
     },
@@ -46,6 +47,10 @@ const UpdatePassword = () => {
   return (
     <div className="flex flex-col items-center justify-center p-4">
       <h2 className="text-lg font-semibold mb-4">Change Your Password</h2>
+      {/* Display messages */}
+{isLoading && <AlertMessage type="loading" message="Updating..." />}
+ {isError && (<AlertMessage type="error"   message={error?.response?.data?.message || "An error occurred"}/>)}
+{isSuccess && <AlertMessage type="success" message="Update successful..." />}
       <form onSubmit={formik.handleSubmit} className="w-full max-w-xs">
         <div className="mb-4">
           <label
